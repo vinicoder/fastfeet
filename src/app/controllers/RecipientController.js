@@ -2,6 +2,16 @@ import * as Yup from 'yup';
 import Recipient from '../models/Recipient';
 
 class RecipientController {
+  async index(req, res) {
+    const { page = 1, limit = 10 } = req.query;
+    const recipients = await Recipient.findAll({
+      limit,
+      offset: (page - 1) * limit,
+      order: [['createdAt', 'desc']],
+    });
+    return res.json(recipients);
+  }
+
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),

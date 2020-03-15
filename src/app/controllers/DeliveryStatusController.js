@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import { Op } from 'sequelize';
+import { parseISO, startOfDay, endOfDay } from 'date-fns';
 import Delivery from '../models/Delivery';
 import File from '../models/File';
 
@@ -38,13 +39,30 @@ class DeliveryStatusController {
     if (!(await schema.isValid(req.body))) {
       return res.status(401).json({ error: 'Validation fails.' });
     }
-
-    const delivery = await Delivery.findByPk(req.params.id);
+    const { id } = req.params;
+    const delivery = await Delivery.findByPk(id);
     if (!delivery) {
       return res.status(401).json('Delivery does not exist.');
     }
 
+    const { deliveryman_id } = delivery;
     const { start_date } = req.body;
+    const parsedDate = parseISO(start_date);
+
+    const { count: countDailyDeliveries } = await Delivery.findAndCountAll({
+      where: {
+        deliveryman_id,
+        start_date: {
+          [Op.between]: [startOfDay(parsedDate), endOfDay(parsedDate)],
+        },
+      },
+    });
+
+    if (countDailyDeliveries === 5) {
+      return res
+        .status(401)
+        .json({ error: 'You have reached your daily delivery limit.' });
+    }
 
     await delivery.update({
       start_date: delivery.start_date || start_date,

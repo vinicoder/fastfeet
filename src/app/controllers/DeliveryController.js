@@ -106,7 +106,9 @@ class DeliveryController {
       return res.status(401).json({ error: 'Delivery does not exist' });
     }
 
-    delivery.destroy();
+    await delivery.update({
+      canceled_at: new Date(),
+    });
 
     return res.json();
   }

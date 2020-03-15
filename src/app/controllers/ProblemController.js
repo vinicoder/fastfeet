@@ -27,6 +27,17 @@ class ProblemController {
     return res.json(problems);
   }
 
+  async show(req, res) {
+    const { id } = req.params;
+    const problem = await Problem.findByPk(id);
+
+    if (!problem) {
+      return res.status(400).json({ error: 'Problem does not exist.' });
+    }
+
+    return res.json(problem);
+  }
+
   async store(req, res) {
     const schema = Yup.object().shape({
       description: Yup.string().required(),

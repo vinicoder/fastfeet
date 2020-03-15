@@ -45,6 +45,10 @@ class DeliveryStatusController {
       return res.status(401).json('Delivery does not exist.');
     }
 
+    if (delivery.end_date) {
+      return res.status(401).json('Delivery already started.');
+    }
+
     const { deliveryman_id } = delivery;
     const { start_date } = req.body;
     const parsedDate = parseISO(start_date);
@@ -86,6 +90,10 @@ class DeliveryStatusController {
       return res.status(401).json('Delivery does not exist.');
     }
 
+    if (delivery.end_date) {
+      return res.status(401).json('Delivery already finished.');
+    }
+
     const { end_date, signature_id } = req.body;
 
     if (signature_id) {
@@ -96,7 +104,7 @@ class DeliveryStatusController {
     }
 
     await delivery.update({
-      end_date: delivery.end_date || end_date,
+      end_date,
       signature_id,
     });
 

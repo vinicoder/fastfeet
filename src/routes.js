@@ -1,14 +1,33 @@
 import { Router } from 'express';
+import multer from 'multer';
+
 import authMiddleware from './app/middlewares/auth';
 
+import multerConfig from './config/multer';
+
 import SessionController from './app/controllers/SessionController';
+import FileController from './app/controllers/FileController';
 import RecipientController from './app/controllers/RecipientController';
 import DeliverymanController from './app/controllers/DeliverymanController';
 import DeliveryController from './app/controllers/DeliveryController';
+import DeliveryStatusController from './app/controllers/DeliveryStatusController';
 
 const routes = new Router();
+const upload = multer(multerConfig);
 
 routes.post('/sessions', SessionController.store);
+
+routes.get('/deliverymen/:id/deliveries', DeliveryStatusController.index);
+routes.put(
+  '/deliverymen/:deliverymanId/deliveries/:deliveryId/start',
+  DeliveryStatusController.start
+);
+routes.put(
+  '/deliverymen/:deliverymanId/deliveries/:deliveryId/end',
+  DeliveryStatusController.end
+);
+
+routes.post('/files', upload.single('file'), FileController.store);
 
 routes.use(authMiddleware);
 

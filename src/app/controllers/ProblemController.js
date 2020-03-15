@@ -1,12 +1,12 @@
 import * as Yup from 'yup';
-import DeliveryProblem from '../models/DeliveryProblem';
+import Problem from '../models/Problem';
 import Delivery from '../models/Delivery';
 import Deliveryman from '../models/Deliveryman';
 
-class DeliveryProblemController {
+class ProblemController {
   async index(req, res) {
     const { page = 1, limit = 10 } = req.query;
-    const deliveryProblems = await DeliveryProblem.findAll({
+    const problems = await Problem.findAll({
       where: {
         delivery_id: req.params.id,
       },
@@ -24,7 +24,7 @@ class DeliveryProblemController {
         },
       },
     });
-    return res.json(deliveryProblems);
+    return res.json(problems);
   }
 
   async store(req, res) {
@@ -47,7 +47,7 @@ class DeliveryProblemController {
 
     const { description } = req.body;
 
-    const problem = await DeliveryProblem.create({
+    const problem = await Problem.create({
       delivery_id,
       description,
     });
@@ -55,8 +55,8 @@ class DeliveryProblemController {
     return res.json(problem);
   }
 
-  async cancelDelivery(req, res) {
-    const { delivery_id } = await DeliveryProblem.findByPk(req.params.id);
+  async delete(req, res) {
+    const { delivery_id } = await Problem.findByPk(req.params.id);
     const delivery = await Delivery.findByPk(delivery_id);
 
     if (!delivery) {
@@ -71,4 +71,4 @@ class DeliveryProblemController {
   }
 }
 
-export default new DeliveryProblemController();
+export default new ProblemController();

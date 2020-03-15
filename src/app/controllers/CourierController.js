@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import Courier from '../models/Courier';
+import File from '../models/File';
 
 class CourierController {
   async index(req, res) {
@@ -10,6 +11,26 @@ class CourierController {
       order: [['createdAt', 'desc']],
     });
     return res.json(couriers);
+  }
+
+  async show(req, res) {
+    const { id } = req.params;
+    const courier = await Courier.findOne({
+      where: {
+        id,
+      },
+      include: {
+        model: File,
+        as: 'avatar',
+        attributes: ['path', 'url'],
+      },
+    });
+
+    if (!courier) {
+      return res.status(400).json({ error: 'Courier does not exist.' });
+    }
+
+    return res.json(courier);
   }
 
   async store(req, res) {

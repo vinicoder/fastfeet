@@ -57,9 +57,9 @@ class DeliveryController {
       return res.status(401).json({ error: 'Packages does not exist.' });
     }
 
-    // if (packages.start_date) {
-    //   return res.status(401).json({ error: 'Packages already started.' });
-    // }
+    if (packages.start_date) {
+      return res.status(401).json({ error: 'Packages already started.' });
+    }
 
     const courier = await Courier.findByPk(courier_id);
     if (!courier) {

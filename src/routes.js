@@ -41,11 +41,13 @@ routes.delete('/recipients/:id', RecipientController.delete);
 
 routes.get('/couriers', CourierController.index);
 routes.post('/couriers', CourierController.store);
+routes.get('/couriers/:id', CourierController.show);
 routes.put('/couriers/:id', CourierController.update);
 routes.delete('/couriers/:id', CourierController.delete);
 
 routes.get('/packages', PackageController.index);
 routes.post('/packages', PackageController.store);
+routes.get('/packages/:id', PackageController.show);
 routes.put('/packages/:id', PackageController.update);
 routes.delete('/packages/:id', PackageController.delete);
 

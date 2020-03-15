@@ -1,7 +1,6 @@
 import * as Yup from 'yup';
 import { Op } from 'sequelize';
 import Delivery from '../models/Delivery';
-import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
 
 class DeliveryStatusController {
@@ -40,14 +39,7 @@ class DeliveryStatusController {
       return res.status(401).json({ error: 'Validation fails.' });
     }
 
-    const { deliverymanId, deliveryId } = req.params;
-
-    const deliveryman = await Deliveryman.findByPk(deliverymanId);
-    if (!deliveryman) {
-      return res.status(401).json('Deliveryman does not exist.');
-    }
-
-    const delivery = await Delivery.findByPk(deliveryId);
+    const delivery = await Delivery.findByPk(req.params.id);
     if (!delivery) {
       return res.status(401).json('Delivery does not exist.');
     }
@@ -71,14 +63,7 @@ class DeliveryStatusController {
       return res.status(401).json({ error: 'Validation fails.' });
     }
 
-    const { deliverymanId, deliveryId } = req.params;
-
-    const deliveryman = await Deliveryman.findByPk(deliverymanId);
-    if (!deliveryman) {
-      return res.status(401).json('Deliveryman does not exist');
-    }
-
-    const delivery = await Delivery.findByPk(deliveryId);
+    const delivery = await Delivery.findByPk(req.params.id);
     if (!delivery) {
       return res.status(401).json('Delivery does not exist.');
     }

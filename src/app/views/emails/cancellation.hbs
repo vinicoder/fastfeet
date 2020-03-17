@@ -1,0 +1,24 @@
+<h2>Encomenda Cancelada</h2>
+<strong>Olá, {{ courier.name }}</strong>
+<p>Uma encomenda foi cancelada:</p>
+<p>
+  <strong>Cancelada em: </strong> {{ date }}<br />
+  <strong>Produto: </strong> {{ product }}<br />
+  <strong>Cliente: </strong> {{ recipient.name }} <br />
+  <strong>Entregador: </strong> {{ courier.name }}<br />
+</p>
+
+<strong>Endereço de entrega:</strong>
+<ul style="margin-top: 0;">
+  <li><strong>Rua:</strong> {{ recipient.street }} </li>
+  <li><strong>Número:</strong> {{ recipient.number }} </li>
+  <li><strong>Complemento:</strong> {{ recipient.complement }} </li>
+  <li><strong>CEP:</strong> {{ recipient.cep }} </li>
+  <li><strong>Região:</strong> {{ recipient.city }}/{{ recipient.state }} </li>
+</ul>
+
+<p>
+  <small>
+    Em caso de dúvidas, entre em contato conosco: support@fastfeet.com.br
+  </small>
+</p>

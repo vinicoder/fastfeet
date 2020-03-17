@@ -2,6 +2,11 @@ import * as Yup from 'yup';
 import Problem from '../models/Problem';
 import Package from '../models/Package';
 import Courier from '../models/Courier';
+import File from '../models/File';
+
+import CancellationMail from '../jobs/CancellationMail';
+import Queue from '../../lib/Queue';
+import Recipient from '../models/Recipient';
 
 class ProblemController {
   async index(req, res) {
@@ -67,8 +72,45 @@ class ProblemController {
   }
 
   async delete(req, res) {
-    const { package_id } = await Problem.findByPk(req.params.id);
-    const packages = await Package.findByPk(package_id);
+    const problem = await Problem.findByPk(req.params.id, {
+      include: [
+        {
+          model: Package,
+          as: 'package',
+          attributes: ['id', 'product', 'canceled_at'],
+          include: [
+            {
+              model: Courier,
+              as: 'courier',
+              attributes: ['id', 'name', 'email', 'avatar_id'],
+              include: [
+                {
+                  model: File,
+                  as: 'avatar',
+                  attributes: ['name', 'path', 'url'],
+                },
+              ],
+            },
+            {
+              model: Recipient,
+              as: 'recipient',
+              attributes: [
+                'id',
+                'name',
+                'cep',
+                'street',
+                'number',
+                'complement',
+                'state',
+                'city',
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    const packages = await Package.findByPk(problem.package_id);
 
     if (!packages) {
       return res.status(401).json({ error: 'Package does not exist' });
@@ -78,7 +120,9 @@ class ProblemController {
       canceled_at: new Date(),
     });
 
-    return res.json();
+    await Queue.add(CancellationMail.key, { problem });
+
+    return res.json(problem);
   }
 }
 

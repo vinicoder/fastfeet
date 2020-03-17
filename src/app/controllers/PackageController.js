@@ -4,6 +4,9 @@ import Courier from '../models/Courier';
 import Recipient from '../models/Recipient';
 import File from '../models/File';
 
+import AvailableMail from '../jobs/AvailableMail';
+import Queue from '../../lib/Queue';
+
 class PackageController {
   async index(req, res) {
     const { page = 1, limit = 10 } = req.query;
@@ -82,12 +85,40 @@ class PackageController {
       product,
     });
 
-    return res.json({
-      id,
-      recipient_id,
-      courier_id,
-      product,
+    const packages = await Package.findByPk(id, {
+      include: [
+        {
+          model: Recipient,
+          as: 'recipient',
+          attributes: [
+            'id',
+            'name',
+            'cep',
+            'street',
+            'number',
+            'complement',
+            'state',
+            'city',
+          ],
+        },
+        {
+          model: Courier,
+          as: 'courier',
+          attributes: ['id', 'name', 'email', 'avatar_id'],
+          include: [
+            {
+              model: File,
+              as: 'avatar',
+              attributes: ['name', 'path', 'url'],
+            },
+          ],
+        },
+      ],
     });
+
+    await Queue.add(AvailableMail.key, { packages });
+
+    return res.json(packages);
   }
 
   async update(req, res) {
